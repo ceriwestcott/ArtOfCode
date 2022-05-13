@@ -17,29 +17,40 @@ export class QuizComponent implements OnInit {
     private quizService: QuizService,
     private readonly router: Router
   ) {}
-  questionQueueNumber = new BehaviorSubject(0);
-  questionQueueNumber$ = this.questionQueueNumber.asObservable();
-  quiz$: Observable<Quiz>;
+  //Set First Question as 0;
+  questionNumber: number = 0;
+  //Rename Quiz to Question
+  currentQuestion: Quiz;
+  //All Quizes to load at the start
+  quiz: Quiz[];
   currentResponse: QuizResponse | null = null;
 
   selectAnswer(answer: QuizResponse) {
     this.currentResponse = answer;
   }
 
-  sendAnswer() {
+  onSubmitClick() {
     if (this.currentResponse) {
       this.quizService.sendCurrentAnswer(this.currentResponse);
       this.currentResponse = null;
-      this.questionQueueNumber.next(this.questionQueueNumber.value + 1);
-      if (this.questionQueueNumber.value === 10) {
+      //If next question does not exist, route to results
+      if (this.questionNumber + 1 > this.quiz.length - 1) {
         this.router.navigate(['/quiz/results']);
+      } else {
+        //else, next question
+        this.questionNumber++;
+        this.currentQuestion = { ...this.quiz[this.questionNumber] };
       }
     }
   }
 
   ngOnInit(): void {
-    this.quiz$ = this.quizService.getRandomQuiz();
+    //Get Entire quiz
+    this.quizService.getQuizes().subscribe((quiz: Quiz[]) => {
+      this.quiz = quiz;
+      //set first question
+      this.currentQuestion = this.quiz[this.questionNumber];
+    });
   }
-
   //service which will tell us the number of avaiable quizes to show.
 }

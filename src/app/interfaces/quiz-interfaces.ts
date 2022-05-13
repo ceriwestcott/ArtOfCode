@@ -8,11 +8,16 @@ export interface QuizResults {
 export interface Quiz {
   id: number;
   question: string;
-  options: string[];
+  options: Options[];
+  answer: number;
+}
+
+export interface Options {
+  id: number;
   answer: string;
 }
 
 export interface QuizResponse {
-  id: number;
-  choosenAnswer: string;
+  questionId: number;
+  optionId: string;
 }

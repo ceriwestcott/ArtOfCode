@@ -7,14 +7,17 @@ import { Quiz, QuizResponse } from 'src/app/interfaces/quiz-interfaces';
   styleUrls: ['./quiz-card.component.scss'],
 })
 export class QuizCardComponent implements OnInit {
-  @Input() currentQuiz!: Quiz | null;
+  @Input() currentQuestion!: Quiz | null;
   @Input() currentResponse!: QuizResponse | null;
 
   @Output() chosenAnswer = new EventEmitter<QuizResponse>();
   answer: any;
 
-  sendChoosenAnswer(choosenAnswer: string) {
-    this.answer = { id: this.currentQuiz?.id, choosenAnswer };
+  sendChoosenAnswer(index: number, optionId: number) {
+    this.answer = {
+      optionId: optionId,
+      questionId: index,
+    };
     this.chosenAnswer.emit(this.answer);
   }
 

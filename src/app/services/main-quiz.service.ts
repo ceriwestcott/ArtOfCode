@@ -8,22 +8,15 @@ import { Quiz, QuizResponse, QuizResults } from '../interfaces/quiz-interfaces';
 })
 export class QuizService {
   Quizes$: Quiz[] = [];
-  AllAnswers: QuizResponse[] = [];
+  answers: QuizResponse[] = [];
   // finalTableData: QuizResults[] = [];
   finalTableData: any = of();
 
   constructor() {}
 
   getQuizes(): Observable<Quiz[]> {
-    const Quizes$ = of(quizMock);
-    return Quizes$;
-  }
-
-  getRandomQuiz(): Observable<Quiz> {
-    const randomQuiz$ = of(
-      quizMock[Math.floor(Math.random() * quizMock.length)]
-    );
-    return randomQuiz$;
+    this.Quizes$ = quizMock;
+    return of(this.Quizes$);
   }
 
   //Todo final quiz
@@ -32,35 +25,46 @@ export class QuizService {
   //everytime the user clicks, i push a value to the array, and I can
 
   getQuizTableDataFinal(): any {
-    //id,choosen Answer //loop thru the object
-    this.finalTableData = of(
-      this.AllAnswers.map((obj) => {
-        return {
-          id: obj.id,
-          question: quizMock[obj.id - 1].question,
-          choosenAnswer: obj.choosenAnswer,
-          correctAnswer: quizMock[obj.id - 1].answer,
-        };
-      })
-    );
-    console.log(this.finalTableData);
-    return this.finalTableData;
+    let tableData = this.answers.map((response: QuizResponse) => {
+      debugger;
+      return {
+        id: response.questionId + 1,
+        question: quizMock[response.questionId].question,
+        choosenAnswer:
+          quizMock[response.questionId].options[Number(response.optionId)],
+        correctAnswer:
+          quizMock[response.questionId].options[
+            quizMock[response.questionId].answer
+          ],
+      };
+    });
+    return tableData;
   }
 
   // GET rid of the quizes that were already shown , never return them again
 
   sendCurrentAnswer(currentAnswer: QuizResponse): void {
-    this.AllAnswers.push(currentAnswer);
-    this.checkCompleteness();
-    console.log(this.AllAnswers);
+    this.answers.push(currentAnswer);
   }
-  checkCompleteness() {
-    // big brain xD
-    const correctness = this.AllAnswers.map(
-      ({ id, choosenAnswer }) =>
-        quizMock.find((quiz) => quiz.id === id)?.answer === choosenAnswer
-    );
-    console.log(correctness);
-    return correctness.every(Boolean);
+
+  //ToDo move to service - just a random array shuffling algo i found on stack
+  shuffle(array: Quiz[]) {
+    let currentIndex = array.length,
+      randomIndex;
+
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+      // Pick a remaining element.
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+
+      // And swap it with the current element.
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex],
+        array[currentIndex],
+      ];
+    }
+
+    return array;
   }
 }

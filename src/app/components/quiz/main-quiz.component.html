@@ -4,14 +4,14 @@
 <div fxLayout="column" class="appQuizCardMargin" @appear>
   <app-quiz-card
     (chosenAnswer)="selectAnswer($event)"
-    [currentQuiz]="quiz$ | async"
+    [currentQuestion]="currentQuestion"
+    [currentResponse]="currentResponse"
     fxLayout="row"
     fxLayoutAlign="center center"
-    [currentResponse]="currentResponse"
   ></app-quiz-card>
 
   <div fxLayout="row" fxLayoutAlign="center center">
-    <button mat-button class="quizSubmitButton" (click)="sendAnswer()">
+    <button mat-button class="quizSubmitButton" (click)="onSubmitClick()">
       Submit
     </button>
   </div>

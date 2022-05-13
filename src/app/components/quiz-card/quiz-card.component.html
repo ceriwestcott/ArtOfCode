@@ -1,6 +1,6 @@
 <mat-card class="matCardStyles">
   <p class="quizQuestionStyles" fxLayout="row" fxLayoutAlign="center center">
-    {{ currentQuiz!.question }} ?
+    {{ currentQuestion?.question }}
   </p>
   <div
     fxLayout="row"
@@ -9,17 +9,20 @@
     fxLayout.lt-sm="column"
     fxLayoutAlign.lt-sm="space-evenly center"
   >
-    <div *ngFor="let option of currentQuiz!.options" class="quizMargin">
+    <div
+      *ngFor="let option of currentQuestion?.options; let i = index"
+      class="quizMargin"
+    >
       <button
         mat-button
         [ngClass]="
-          answer?.choosenAnswer === option
+          answer?.optionId === option.id
             ? 'quizQuestionsOptions quizSelectedAnswer '
             : 'quizQuestionsOptions'
         "
-        (click)="sendChoosenAnswer(option)"
+        (click)="sendChoosenAnswer(i, option.id)"
       >
-        {{ option }}
+        {{ option.answer }}
       </button>
     </div>
   </div>

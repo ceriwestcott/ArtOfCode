@@ -12,6 +12,7 @@ export class QuizResultsComponent implements OnInit {
 
   dataSource: any;
   ngOnInit(): void {
+    debugger;
     this.dataSource = this.quiz.getQuizTableDataFinal();
   }
 

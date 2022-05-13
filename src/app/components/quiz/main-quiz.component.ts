@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, switchMap } from 'rxjs';
+import { BehaviorSubject, switchMap, Observable } from 'rxjs';
 import { appear } from 'src/app/animations/main/common.animations';
-import { QuizResponse } from 'src/app/interfaces/quiz-interfaces';
+import { Quiz, QuizResponse } from 'src/app/interfaces/quiz-interfaces';
 
 import { QuizService } from 'src/app/services/main-quiz.service';
 
@@ -13,14 +13,13 @@ import { QuizService } from 'src/app/services/main-quiz.service';
   animations: [appear],
 })
 export class QuizComponent implements OnInit {
-  constructor(private quiz: QuizService, private readonly router: Router) {}
+  constructor(
+    private quizService: QuizService,
+    private readonly router: Router
+  ) {}
   questionQueueNumber = new BehaviorSubject(0);
   questionQueueNumber$ = this.questionQueueNumber.asObservable();
-  quiz$ = this.questionQueueNumber$.pipe(
-    switchMap((num) => {
-      return this.quiz.getRandomQuiz();
-    })
-  );
+  quiz$: Observable<Quiz>;
   currentResponse: QuizResponse | null = null;
 
   selectAnswer(answer: QuizResponse) {
@@ -29,7 +28,7 @@ export class QuizComponent implements OnInit {
 
   sendAnswer() {
     if (this.currentResponse) {
-      this.quiz.sendCurrentAnswer(this.currentResponse);
+      this.quizService.sendCurrentAnswer(this.currentResponse);
       this.currentResponse = null;
       this.questionQueueNumber.next(this.questionQueueNumber.value + 1);
       if (this.questionQueueNumber.value === 10) {
@@ -38,7 +37,9 @@ export class QuizComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.quiz$ = this.quizService.getRandomQuiz();
+  }
 
   //service which will tell us the number of avaiable quizes to show.
 }
